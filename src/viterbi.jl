@@ -207,13 +207,6 @@ function viterbi_3(y::Array{Int16,1}, A::Array{Float64,2}, mu::Array{Float64,2},
                 mx,xi = findmax([t1,t2,t3,t4])
                 T1[jstate1,i] = mx
                 T2[jstate1,i] = [jstate1,jstate2,jstate3,jstate4][xi]
-                #if t1_1 > tl_1
-                #    T1[jstate1,i] = t1
-                #    T2[jstate1,i] = jstate1
-                #else
-                #    T1[jstate1,i] = t1
-                #    T2[jstate1,i] = jstate2
-                #end
                 #neuron 2 in state 1 neuron 1 in other states
                 for j1=2:nstates
                     q1 = logpdf(Pn[j1,k1],y[i]) #emission probability for symbol i from state j
