@@ -1,5 +1,5 @@
 module SpikeSorter
 
-# package code goes here
+include("viterbi.jl")
 
 end # module
