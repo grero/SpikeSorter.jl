@@ -241,11 +241,12 @@ function viterbi_3(y::Array{Int16,1}, A::Array{Float64,2}, mu::Array{Float64,2},
                         T2[jstatef,i] = jstate2
                     end
                     #neuron 1 in other states as well
+                    a2 = A[j2-1,j2] + q2 #only compute once for the following loop
                     for j1=2:nstates
                         q1 = logpdf(Pn[j1,k1],y[i]) #emission probability for symbol i from state j
                         jstatep = joint_states[ppq,j1-1,j2-1]
                         jstatef = joint_states[ppq,j1,j2]
-                        tm = T1[jstatep,i-1] + A[j2-1,j2] + A[j1-1,j1] + q1 + q2
+                        tm = T1[jstatep,i-1] + A[j1-1,j1] + q1 + a2
                         T1[jstatef,i] = tm
                         T2[jstatef,i] = jstatep
                     end
