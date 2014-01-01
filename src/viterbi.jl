@@ -25,6 +25,7 @@ function viterbi(y::Array{Int16,1}, p::Number, mu::Array{Float64,2}, C::Number,c
         #check to see whether the last point is noise
         #if not, go backwards until we hit noise, then resort the non-noise part in the next chunk
         if maximum(x) == 1
+            i+= 1
             continue #pure noise; go to the next chunk
         end
         j = 0 
@@ -33,6 +34,7 @@ function viterbi(y::Array{Int16,1}, p::Number, mu::Array{Float64,2}, C::Number,c
         end
         chunks[i+1] -= j
         if chunks[i+1] <= chunks[i]
+            i+=1
             continue #gone through the whole chunk
         end
         X[chunks[i]:chunks[i+1],:] = unfoldIndex(x[1:(end-j)],Q)
