@@ -1,12 +1,12 @@
 using Distributions
-function viterbi(y::Array{Int16,1}, p::Number, mu::Array{Float64,1}, C::Number)
+function viterbi{T<:Real}(y::Array{T,1}, p::Number, mu::Array{Float64,1}, C::Number)
     nstates = length(mu)
     A = prepA(p,nstates)
     x, T2,T1 = viterbi_2(y,A,mu,C)
     return x
 end
 
-function viterbi(y::Array{Int16,1}, p::Number, mu::Array{Float64,2}, C::Number,chunk::Number)
+function viterbi{T<:Real}(y::Array{T,1}, p::Number, mu::Array{Float64,2}, C::Number,chunk::Number)
     nstates = size(mu,1)
     ntemps = size(mu,2)
     A = prepA(p,nstates)
@@ -44,7 +44,7 @@ function viterbi(y::Array{Int16,1}, p::Number, mu::Array{Float64,2}, C::Number,c
     return X
 end
 
-function viterbi(y::Array{Int16,1}, p::Number, mu::Array{Float64,2}, C::Number)
+function viterbi{T<:Real}(y::Array{T,1}, p::Number, mu::Array{Float64,2}, C::Number)
     nstates = size(mu,1)
     ntemps = size(mu,2)
     A = prepA(p,nstates)
@@ -99,7 +99,7 @@ function viterbi(y::Array{Int16,1}, A::Array{Float64,2}, mu::Array{Float64,1}, C
     return x,T2, T1
 end
 
-function viterbi_2(y::Array{Int16,1}, A::Array{Float64,2}, mu::Array{Float64,1}, C::Float64,P::Array{Float64,1})
+function viterbi_2{T<:Real}(y::Array{T,1}, A::Array{Float64,2}, mu::Array{Float64,1}, C::Float64)
     #implementation tailor made for ring transition probabilities
     #assume gaussian emission probabilities
     nstates = size(A,1)
@@ -152,7 +152,7 @@ function prepA(p,n)
     return A
 end
 
-function viterbi_3(y::Array{Int16,1}, A::Array{Float64,2}, mu::Array{Float64,2}, C::Float64)
+function viterbi_3{T<:Real}(y::Array{T,1}, A::Array{Float64,2}, mu::Array{Float64,2}, C::Float64)
     #implementation tailor made for ring transition probabilities; accepts multiple neurons
     #assume gaussian emission probabilities
     nstates = size(A,1)
