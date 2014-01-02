@@ -171,6 +171,7 @@ function viterbi_3{T<:Real}(y::Array{T,1}, A::Array{Float64,2}, mu::Array{Float6
             Pn[j,i] = Normal(mu[j,i],S)
         end
     end
+    LL = zeros(nstates,ntemps)
     #get the mapping from individual states for each neuron to a global state index
     joint_states = createIndex(ntemps,nstates)
     pairs = zeros(Int16,ntemps,ntemps)
@@ -200,6 +201,8 @@ function viterbi_3{T<:Real}(y::Array{T,1}, A::Array{Float64,2}, mu::Array{Float6
                 jstate4 = joint_states[ppq, nstates, 1]
                 q1 = logpdf(Pn[1,k1],y[i]) #emission probability for symbol i from state j
                 q2 = logpdf(Pn[1,k2],y[i]) #emission probability for symbol i from state j
+                LL[1,k1] = q1
+                LL[1,k2] = q2
                 t1 = T1[jstate1,i-1]+A[1,1]+q1 + q2 + A[1,1] #neuron 1 and 2 from state 1
                 t2 = T1[jstate2,i-1]+A[nstates,1]+q1 + q2 + A[nstates,1] #neuron 1 and 2 from last state
                 t3 = T1[jstate3,i-1]+A[1,1]+q1 + q2 + A[nstates,1] #neuron 1 from 1, neuron 2 from last state
@@ -210,6 +213,7 @@ function viterbi_3{T<:Real}(y::Array{T,1}, A::Array{Float64,2}, mu::Array{Float6
                 #neuron 2 in state 1 neuron 1 in other states
                 for j1=2:nstates
                     q1 = logpdf(Pn[j1,k1],y[i]) #emission probability for symbol i from state j
+                    LL[j1,k1] = q1
                     jstate1 = joint_states[ppq,j1-1,1] #get the joint state
                     jstate2 = joint_states[ppq, j1-1, nstates]
                     jstatef = joint_states[ppq,j1,1]
@@ -243,7 +247,7 @@ function viterbi_3{T<:Real}(y::Array{T,1}, A::Array{Float64,2}, mu::Array{Float6
                     #neuron 1 in other states as well
                     a2 = A[j2-1,j2] + q2 #only compute once for the following loop
                     for j1=2:nstates
-                        q1 = logpdf(Pn[j1,k1],y[i]) #emission probability for symbol i from state j
+                        q1 = LL[j1,k1]
                         jstatep = joint_states[ppq,j1-1,j2-1]
                         jstatef = joint_states[ppq,j1,j2]
                         tm = T1[jstatep,i-1] + A[j1-1,j1] + q1 + a2
