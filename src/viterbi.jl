@@ -229,7 +229,7 @@ function viterbi_3{T<:Real}(y::Array{T,1}, A::Array{Float64,2}, mu::Array{Float6
                 end
                 #neuron 1 in state 1
                 #remaining transitions are deterministic
-                q1 = logpdf(Pn[1,k1],y[i]) #emission probability for symbol i from state j
+                q1 = LL[1,k1] #emission probability for symbol i from state j
                 for j2=2:nstates    
                     q2 = logpdf(Pn[j2,k2],y[i]) #emission probability for symbol i from state j
                     jstate1 = joint_states[ppq,1,j2-1] #get the joint state
