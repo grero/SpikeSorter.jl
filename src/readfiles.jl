@@ -74,7 +74,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 	for ss in (".","..")
 		fname = "$(ss)/event_data.mat"
 		if isfile(fname)
-			verobse && println("Found trial info. Checking for relevant spikes....")
+			verbose && println("Found trial info. Checking for relevant spikes....")
 			trials = Information.loadTrialInfo(fname)
 			rtrials = Information.getTrialType(trials,:reward)
 			target_time = Information.gettime(rtrials,:target)
