@@ -54,7 +54,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 		files = []
 	end
 	config = Dict()
-	for ss in (".", "..")
+	for ss in (".", "..","../..")
 		if isfile("$(ss)/channel_config.csv")
 			config = channel_config("$(ss)/channel_config.csv")
 			break
