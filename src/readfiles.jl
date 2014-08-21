@@ -84,7 +84,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 			aligned_spikes = Information.getTrialRaster(sptrains,rtrials,:target;tmin=-200.0,tmax=trial_dur)
 			#remove cells that never spike during the trial
 			for cc in sort(setdiff(1:length(cells),unique(aligned_spikes.cellidx)))
-				sptrains.pop(cells[cc])
+				pop!(sptrains,cells[cc])
 				verbose && println("\tRemoved cell $(cell[cc])")
 			end
 			break
