@@ -23,8 +23,8 @@ function loadWaveformsFile(fname::String;time_conversion::Real=0.001)
 	return float(waveforms),float(timestamps)*time_conversion
 end
 
-function assign_area(sptrains::Dict,config;return_mapping=false)
-	newsptrains = Dict()
+function assign_area{T,V}(sptrains::Dict{T,V},config;return_mapping=false)
+	newsptrains = Dict{T,V}()
 	mapping = Dict()
 	rr = r"g([0-9]*)c([0-9])*[s]*"
 	for (k,v) in sptrains
