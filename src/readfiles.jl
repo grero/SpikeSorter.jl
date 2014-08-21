@@ -85,7 +85,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 			#remove cells that never spike during the trial
 			for cc in sort(setdiff(1:length(cells),unique(aligned_spikes.cellidx)))
 				pop!(sptrains,cells[cc])
-				verbose && println("\tRemoved cell $(cell[cc])")
+				verbose && println("\tRemoved cell $(cells[cc])")
 			end
 			break
 		end
