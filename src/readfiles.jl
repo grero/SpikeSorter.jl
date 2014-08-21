@@ -1,6 +1,7 @@
 import MAT
 import Base.parse
 using DataFrames
+import Information
 
 function loadWaveformsFile(fname::String;time_conversion::Real=0.001)
 	fid = open(fname,"r")
@@ -69,6 +70,24 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 			end,files)
 	sptrains = merge(SS...)
 	#TODO: replace 'groupXXX' with the appropriate area and array indication, i.e. vFEFAch1c01s
+	#check if we have a trial structure
+	for ss in (".","..")
+		fname = "$(ss)/event_data.mat"
+		if isfile(fname)
+			trials = Information.loadTrialInfo(fname)
+			rtrials = Infromation.getTrialType(trials,:reward)
+			target_time = Information.gettime(rtrials,:target)
+			response_time = Information.gettime(rtrials,:response)
+			trial_dur = maximum(response_time .- target_time)
+			cells = Information.sortCells(sptrains)
+			aligned_spikes = Information.getTrialRaster(sptrains,rtrials,:target;tmin=-200.0,tmax=trial_dur)
+			#remove cells that never spike during the trial
+			for cc in sort(setdiff(1:length(cells),unique(aligned_spikes.cellidx)))
+				sptrains.pop(cells[cc])
+			end
+			break
+		end
+	end
 	if !isempty(config)
 		newsptrains = assign_area(sptrains,config)
 	else
