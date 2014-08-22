@@ -79,7 +79,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 			rtrials = Information.getTrialType(trials,:reward)
 			target_time = Information.gettime(rtrials,:target)
 			response_time = Information.gettime(rtrials,:response)
-			trial_dur = maximum(response_time .- target_time)
+			trial_dur = 1000*maximum(response_time .- target_time) #convert from seconds to ms
 			cells = Information.sortCells(sptrains)
 			aligned_spikes = Information.getTrialRaster(sptrains,rtrials,:target;tmin=-200.0,tmax=trial_dur)
 			#remove cells that never spike during the trial
