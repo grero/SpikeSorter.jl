@@ -115,16 +115,21 @@ function getspiketrains(session::String, group::Integer;checkArtifact::Bool=true
 		spidx = (cids.==c) | ((cids.==-1)&(D["overlaps"][:,c].==1))
 		cidx = cids.==c
 		if checkArtifact
-			mm = mean(waveforms[:,:,bool(cidx[:])],3)
-			ii = indmax(-mm) #get the minimum point
-			goodcluster = ii in div(size(mm,2),3):div(2*size(mm,2),3)
-			goodcluster = goodcluster && -minimum(mm) >= maximum(mm)
-			if goodcluster
-				cell = "g$(group)c$c2"
-				sptrains[cell] = timestamps[spidx[:]]
-				c2 += 1
+			if size(cids,1) == size(waveforms,3)
+
+				mm = mean(waveforms[:,:,bool(cidx[:])],3)
+				ii = indmax(-mm) #get the minimum point
+				goodcluster = ii in div(size(mm,2),3):div(2*size(mm,2),3)
+				goodcluster = goodcluster && -minimum(mm) >= maximum(mm)
+				if goodcluster
+					cell = "g$(group)c$c2"
+					sptrains[cell] = timestamps[spidx[:]]
+					c2 += 1
+				else
+					verbose > 0 && println("\tCluster $c classified as artifact and removed")
+				end
 			else
-				verbose > 0 && println("\tCluster $c classified as artifact and removed")
+				println("\tsize(cids,1) != size(waveforms,3); Skipping cluster $c...")
 			end
 		else
 			cell = "g$(group)c$c"
