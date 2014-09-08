@@ -48,11 +48,28 @@ function assign_area{T,V}(sptrains::Dict{T,V},config;return_mapping=false)
 end
 
 function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0),checkArtifact::Bool=true,verbose::Integer=0)
+	if isempty(session)
+		#attempt to get session from the pl2 file
+		for d in (".","..")
+			files = split(chomp(readall(`find $d -name "*.pl2" -maxdepth 1`)))
+			if !isempty(files)
+				session = splitext(splitdir(files[1])[2])[1]
+				break
+			end
+		end
+	end
+	verbose && println("Analyzing session $session ...")
 	if isempty(groups)
 		#get the groups from the waveforms files in the current directory
 		files = split(chomp(readall(`find . -name "*waveforms.bin"`)))
 	else
-		files = []
+		files = Array(String,0)
+		for g in groups
+			pp = @sprintf "%sg%04dwaveforms.bin" session g
+			if isfile(pp)
+				push!(files,pp)
+			end
+		end
 	end
 	config = Dict()
 	for ss in (".", "..","../..")
@@ -69,7 +86,6 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 					sptrains
 			end,files)
 	sptrains = merge(SS...)
-	#TODO: replace 'groupXXX' with the appropriate area and array indication, i.e. vFEFAch1c01s
 	#check if we have a trial structure
 	for ss in (".","..")
 		fname = "$(ss)/event_data.mat"
