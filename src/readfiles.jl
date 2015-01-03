@@ -135,8 +135,8 @@ function getspiketrains(session::String, group::Integer;checkArtifact::Bool=true
 
 				mm = mean(waveforms[:,:,bool(cidx[:])],3)
 				ii = indmax(-mm) #get the minimum point
-				goodcluster = ii in div(size(mm,2),3):div(2*size(mm,2),3)
-				goodcluster = goodcluster && -minimum(mm) >= maximum(mm)
+				goodcluster = ii in div(size(mm,2),3):div(2*size(mm,2),3) #minimum should occur in the middle 3rd of the spike
+				goodcluster = goodcluster && -minimum(mm) >= maximum(mm) #minimum should exceed maximum in absolute value
 				if goodcluster
 					cell = "g$(group)c$c2"
 					sptrains[cell] = timestamps[spidx[:]]
