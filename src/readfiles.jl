@@ -59,7 +59,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 			end
 		end
 	end
-	verbose && println("Analyzing session $session ...")
+	verbose > 0 && println("Analyzing session $session ...")
 	if isempty(groups)
 		#get the groups from the waveforms files in the current directory
 		files = split(chomp(readall(`find . -name "*waveforms.bin"`)))
@@ -91,7 +91,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 	for ss in (".","..")
 		fname = "$(ss)/event_data.mat"
 		if isfile(fname)
-			verbose && println("Found trial info. Checking for relevant spikes....")
+			verbose > 0 && println("Found trial info. Checking for relevant spikes....")
 			trials = Stimulus.loadTrialInfo(fname)
 			rtrials = Stimulus.getTrialType(trials,:reward)
 			target_time = Stimulus.gettime(rtrials,:target)
@@ -102,7 +102,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 			#remove cells that never spike during the trial
 			for cc in sort(setdiff(1:length(cells),unique(aligned_spikes.cellidx)))
 				pop!(sptrains,cells[cc])
-				verbose && println("\tRemoved cell $(cells[cc])")
+				verbose > 0 && println("\tRemoved cell $(cells[cc])")
 			end
 			break
 		end
