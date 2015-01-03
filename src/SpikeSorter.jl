@@ -1,4 +1,5 @@
 module SpikeSorter
+include("types.jl")
 include("utility.jl")
 include("hmm.jl")
 include("viterbi.jl")
