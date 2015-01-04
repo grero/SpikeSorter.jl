@@ -1,7 +1,8 @@
 import MAT
 import Base.parse
 using DataFrames
-import Information
+import Stimulus
+import Spiketrains
 
 function loadWaveformsFile(fname::String;time_conversion::Real=0.001)
 	fid = open(fname,"r")
@@ -91,13 +92,13 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 		fname = "$(ss)/event_data.mat"
 		if isfile(fname)
 			verbose && println("Found trial info. Checking for relevant spikes....")
-			trials = Information.loadTrialInfo(fname)
-			rtrials = Information.getTrialType(trials,:reward)
-			target_time = Information.gettime(rtrials,:target)
-			response_time = Information.gettime(rtrials,:response)
+			trials = Stimulus.loadTrialInfo(fname)
+			rtrials = Stimulus.getTrialType(trials,:reward)
+			target_time = Stimulus.gettime(rtrials,:target)
+			response_time = Stimulus.gettime(rtrials,:response)
 			trial_dur = 1000*maximum(response_time .- target_time) #convert from seconds to ms
-			cells = Information.sortCells(sptrains)
-			aligned_spikes = Information.getTrialRaster(sptrains,rtrials,:target;tmin=-200.0,tmax=trial_dur)
+			cells = Spiketrains.sortCells(sptrains)
+			aligned_spikes = Spiketrains.getTrialRaster(sptrains,rtrials,:target;tmin=-200.0,tmax=trial_dur)
 			#remove cells that never spike during the trial
 			for cc in sort(setdiff(1:length(cells),unique(aligned_spikes.cellidx)))
 				pop!(sptrains,cells[cc])
