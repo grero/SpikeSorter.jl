@@ -22,3 +22,37 @@ function spike_width(TF::TemplateFile,samplingrate::Real)
 end
 
 spike_width(A) = spike_width(A, 40000)
+
+function get_features(session::String)
+	templatefiles = split(readchomp(`find . -name "$(session)*templates*.hdf5"`),"\n")	
+	return get_features(templatefiles)
+end
+
+function get_features{T<:String}(templatefiles::Array{T,1})
+	w = Float64[]
+	isi = Float64[]
+	for tf in templatefiles
+		m = match(r"([[:alpha:][:digit:]_]*)_templatesg([[:digit:]]*)", tf)
+		dd,pp = splitdir(tf)
+		session = m.captures[1]
+		group = m.captures[2]
+		TF = get_valid_templates(tf)
+		if TF == nothing
+			continue
+        end
+		if !isempty(dd)
+			f = "$(dd)/$(session)g$(group)Spiketrains.mat"
+		else
+			f = "$(session)g$(group)Spiketrains.mat"
+		end
+		DD = MAT.matread(f)
+		if length(DD) == size(TF.templates,3)
+			append!(w, spike_width(TF))
+			for c in 1:size(TF.templates,3)
+				cc = @sprintf "%02d" c
+				push!(isi, median(diff(DD["cluster$(cc)s"])))
+			end
+		end
+	end
+	return w, isi
+end
