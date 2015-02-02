@@ -45,6 +45,9 @@ function get_features{T<:String}(templatefiles::Array{T,1})
 		else
 			f = "$(session)g$(group)Spiketrains.mat"
 		end
+		if !isfile(f)
+			continue
+		end
 		DD = MAT.matread(f)
 		if length(DD) == size(TF.templates,3)
 			append!(w, spike_width(TF))
