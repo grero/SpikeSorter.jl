@@ -24,14 +24,25 @@ end
 spike_width(A) = spike_width(A, 40000)
 
 function get_features(session::String)
+	features = Array(Features,0)
+	get_features!(features,session)
+	features
+end
+
+function get_features!(features::Array{Features,1},session::String)
 	templatefiles = split(readchomp(`find . -name "$(session)*templates*.hdf5"`),"\n")	
-	return get_features(templatefiles)
+	return get_features!(features,templatefiles)
 end
 
 function get_features{T<:String}(templatefiles::Array{T,1})
+	features = Array(Features,0)
+	get_features!(features,templatefiles)
+	features
+end
+
+function get_features!{T<:String}(features::Array{Features,1},templatefiles::Array{T,1})
 	w = Float64[]
 	isi = Float64[]
-	features = Array(Features,0)
 	for tf in templatefiles
 		m = match(r"([[:alpha:][:digit:]_]*)_templatesg([[:digit:]]*)", tf)
 		dd,pp = splitdir(tf)
