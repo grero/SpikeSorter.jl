@@ -23,6 +23,17 @@ end
 
 spike_width(A) = spike_width(A, 40000)
 
+function spike_dv_ratio(spike::Array{Float64,1},samplingrate::Real)
+	spikei = Grid.InterpGrid(spike,Grid.BCnil, Grid.InterpQuadratic)
+	dt = length(spike)/samplingrate
+	#upsample
+	spikes = spikei[linspace(1,length(spike),1000)]
+	dv = diff(spikes)
+	abs(maximum(dv)/minimum(dv))
+end
+
+spike_dv_ratio(spike::Array{Float64,1}) = spike_dv_ratio(spike,40000)
+
 function get_features(session::String)
 	features = Array(Features,0)
 	get_features!(features,session)
@@ -68,7 +79,8 @@ function get_features!{T<:String}(features::Array{Features,1},templatefiles::Arr
 				_isi = diff(DD["cluster$(cc)s"][:])
 				spikes_in_bursts = (sum(_isi .< 5)+1)/length(_isi+1)
 				m_isi = percentile(_isi,5)
-				push!(features, Features(_w[c], spikes_in_bursts,m_isi))
+				dvr = spike_dv_ratio(TF.templates[:,:,c][:])
+				push!(features, Features(_w[c], spikes_in_bursts,m_isi,dvr))
 			end
 		end
 	end
