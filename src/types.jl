@@ -19,6 +19,7 @@ type Features
 	spike_width::Float64
 	spikes_in_bursts::Float64
 	low_isi::Float64
+	dv_ratio::Float64
 end
 
 function TemplateFile(fname::String;verbose::Integer=0)
