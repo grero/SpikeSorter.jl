@@ -31,6 +31,7 @@ end
 function get_features{T<:String}(templatefiles::Array{T,1})
 	w = Float64[]
 	isi = Float64[]
+	features = Array(Features,0)
 	for tf in templatefiles
 		m = match(r"([[:alpha:][:digit:]_]*)_templatesg([[:digit:]]*)", tf)
 		dd,pp = splitdir(tf)
@@ -50,12 +51,15 @@ function get_features{T<:String}(templatefiles::Array{T,1})
 		end
 		DD = MAT.matread(f)
 		if length(DD) == size(TF.templates,3)
-			append!(w, spike_width(TF))
+			_w = spike_width(TF)
 			for c in 1:size(TF.templates,3)
 				cc = @sprintf "%02d" c
-				push!(isi, percentile(diff(DD["cluster$(cc)s"][:]),5))
+				_isi = diff(DD["cluster$(cc)s"][:])
+				spikes_in_bursts = (sum(_isi .< 5)+1)/length(_isi+1)
+				m_isi = percentile(_isi,5)
+				push!(features, Features(_w[c], spikes_in_bursts,m_isi))
 			end
 		end
 	end
-	return w, isi
+	return features 
 end
