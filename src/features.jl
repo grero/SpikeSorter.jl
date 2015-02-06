@@ -53,7 +53,7 @@ function get_features{T<:String}(templatefiles::Array{T,1})
 			append!(w, spike_width(TF))
 			for c in 1:size(TF.templates,3)
 				cc = @sprintf "%02d" c
-				push!(isi, median(diff(DD["cluster$(cc)s"])))
+				push!(isi, percentile(diff(DD["cluster$(cc)s"]),5))
 			end
 		end
 	end
