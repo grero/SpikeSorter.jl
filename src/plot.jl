@@ -50,4 +50,36 @@ function plot(p::Winston.FramedPlot, tf::TemplateFile)
 	p
 end
 
+function plot(F::Array{Features,1};kvs...)
+	p = Winston.FramedPlot()
+	plot(p, F;kvs...)
+	p
+end
+
+function plot(p::Winston.FramedPlot, F::Array{Features,1};feature1::Symbol=:spike_width, feature2::Symbol=:spikes_in_bursts)
+	f1 = zeros(length(F))
+	f2 = zeros(length(F))
+	if !(feature1 in names(F[1]) && feature2 in names(F[1]))
+		ArgumentError("Invalid feature name")
+	end
+	for i in 1:length(f1)
+		f1[i] = getfield(F[i],feature1)
+		f2[i] = getfield(F[i],feature2)
+	end
+	#throw away outliers
+	pf1 = percentile(f1, [1,99])	
+	pf2 = percentile(f2, [1,99])	
+	fidx = (f1.>pf1[1])&(f1.<pf1[2])&(f2.>pf2[1])&(f2.<pf2[2])
+	f1 = f1[fidx]
+	f2 = f2[fidx]
+
+	Winston.add(p, Winston.Points(f1,f2))
+	Winston.setattr(p.x2, "draw_axis",false)
+	Winston.setattr(p.y2, "draw_axis",false)
+	Winston.setattr(p.x1, "tickdir", 1)
+	Winston.setattr(p.y1, "tickdir", 1)
+	Winston.setattr(p, "xlabel", replace(string(feature1),"_", " "))
+	Winston.setattr(p, "ylabel", replace(string(feature2),"_", " "))
+	p
+end
 
