@@ -7,6 +7,20 @@ type TemplateFile
 	nchannels::Int64
 end
 
+type SortedFile
+	templates::Array{Float64,3}
+	cinv::Array{Float64,2}
+	ntemplates::Int64
+	nchannels::Int64
+	mlseq::Array{Uint8,2}
+end
+
+type Features
+	spike_width::Float64
+	spikes_in_bursts::Float64
+	low_isi::Float64
+end
+
 function TemplateFile(fname::String;verbose::Integer=0)
 	if !HDF5.ishdf5(fname)	
 		verbose > 0 && println("$fname is not a valid hdf5 file")
