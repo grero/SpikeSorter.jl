@@ -28,24 +28,28 @@ end
 function assign_area{T,V}(sptrains::Dict{T,V},config;return_mapping=false)
 	newsptrains = Dict{T,V}()
 	mapping = Dict()
-	rr = r"g([0-9]*)c([0-9])*[s]*"
 	for (k,v) in sptrains
-		m = match(rr,k)
-		group = int(m.captures[1])
-		cellnr = int(m.captures[2])
-		ad = filter((kk,vv)->group in vv, config)
-		aa = collect(keys(ad))[1]
-		cc = collect(values(ad))[1]
-		cidx = find(cc.==group)[1]
-		kname = "$(aa)_g$(cidx)c$(cellnr)"
-		newsptrains[kname] = v
-		mapping[k] = kname
+            kname = assign_area(k,config)
+            newsptrains[kname] = v
+            mapping[k] = kname
 	end
 	if return_mapping
 		return newsptrains,mapping
 	else
 		return newsptrains
 	end
+end
+
+function assign_area(cell::String, config::Dict)
+	rr = r"g([0-9]*)c([0-9])*[s]*"
+        m = match(rr,cell)
+        group = int(m.captures[1])
+        cellnr = int(m.captures[2])
+        ad = filter((kk,vv)->group in vv, config)
+        aa = collect(keys(ad))[1]
+        cc = collect(values(ad))[1]
+        cidx = find(cc.==group)[1]
+        kname = "$(aa)_g$(cidx)c$(cellnr)"
 end
 
 function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0),checkArtifact::Bool=true,verbose::Integer=0)
