@@ -34,24 +34,24 @@ end
 
 spike_dv_ratio(spike::Array{Float64,1}) = spike_dv_ratio(spike,40000)
 
-function get_features(session::String)
+@compat function get_features(session::AbstractString)
 	features = Array(Features,0)
 	get_features!(features,session)
 	features
 end
 
-function get_features!(features::Array{Features,1},session::String)
+@compat function get_features!(features::Array{Features,1},session::AbstractString)
 	templatefiles = split(readchomp(`find . -name "$(session)*templates*.hdf5"`),"\n")	
 	return get_features!(features,templatefiles)
 end
 
-function get_features{T<:String}(templatefiles::Array{T,1})
+@compat function get_features{T<:AbstractString}(templatefiles::Array{T,1})
 	features = Array(Features,0)
 	get_features!(features,templatefiles)
 	features
 end
 
-function get_features!{T<:String}(features::Array{Features,1},templatefiles::Array{T,1})
+@compat function get_features!{T<:AbstractString}(features::Array{Features,1},templatefiles::Array{T,1})
 	w = Float64[]
 	isi = Float64[]
 	for tf in templatefiles

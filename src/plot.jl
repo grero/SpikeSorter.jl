@@ -3,7 +3,7 @@ import Visualizer.visualize
 import HDF5
 import Color
 
-function visualize{T<:String}(fnames::Array{T,1})
+@compat function visualize{T<:AbstractString}(fnames::Array{T,1})
 	p = Winston.FramedPlot()
 	Winston.setattr(p.x2, "draw_axis", false)
 	Winston.setattr(p.y2, "draw_axis", false)
@@ -22,7 +22,7 @@ function visualize{T<:String}(fnames::Array{T,1})
 	visualize(fnames,800,600,"Spike forms", func3, p)
 end
 
-function plot(fname::String)
+@compat function plot(fname::AbstractString)
 	p = Winston.FramedPlot()
 	Winston.setattr(p.x2, "draw_axis", false)
 	Winston.setattr(p.y2, "draw_axis", false)
@@ -32,7 +32,7 @@ function plot(fname::String)
 	p
 end
 
-function plot(p::Winston.FramedPlot,fname::String)
+@compat function plot(p::Winston.FramedPlot,fname::AbstractString)
 	tf = TemplateFile(fname)	
 	plot(p, tf)
 	p

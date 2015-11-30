@@ -4,7 +4,7 @@ using DataFrames
 import Stimulus
 import Spiketrains
 
-function loadWaveformsFile(fname::String;time_conversion::Real=0.001)
+@compat function loadWaveformsFile(fname::AbstractString;time_conversion::Real=0.001)
 	fid = open(fname,"r")
 	waveforms = Array(Int16,0)
 	timestamps = Array(Uint64,0)
@@ -40,7 +40,7 @@ function assign_area{T,V}(sptrains::Dict{T,V},config;return_mapping=false)
 	end
 end
 
-function assign_area(cell::String, config::Dict)
+@compat function assign_area(cell::AbstractString, config::Dict)
 	rr = r"g([0-9]*)c([0-9])*[s]*"
         m = match(rr,cell)
         group = int(m.captures[1])
@@ -52,7 +52,7 @@ function assign_area(cell::String, config::Dict)
         kname = "$(aa)_g$(cidx)c$(cellnr)"
 end
 
-function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0),checkArtifact::Bool=true,verbose::Integer=0)
+@compat function getspiketrains(;session::AbstractString="",groups::Array{Int64,1}=Array(Int64,0),checkArtifact::Bool=true,verbose::Integer=0)
 	if isempty(session)
 		#attempt to get session from the pl2 file
 		for d in (".","..")
@@ -68,7 +68,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 		#get the groups from the waveforms files in the current directory
 		files = split(chomp(readall(`find . -name "*waveforms.bin"`)))
 	else
-		files = Array(String,0)
+		files = Array(ASCIIString,0)
 		for g in groups
 			pp = @sprintf "%sg%04dwaveforms.bin" session g
 			if isfile(pp)
@@ -119,7 +119,7 @@ function getspiketrains(;session::String="",groups::Array{Int64,1}=Array(Int64,0
 	return newsptrains
 end
 
-function getspiketrains(session::String, group::Integer;checkArtifact::Bool=true,verbose::Integer=0)
+@compat function getspiketrains(session::AbstractString, group::Integer;checkArtifact::Bool=true,verbose::Integer=0)
 	verbose > 0 && println("Processing group $group ...")
 	wfname = @sprintf "%sg%04dwaveforms.bin" session group
 	overlap_fname = @sprintf "%sg%04dwaveforms.overlap" session group
@@ -130,7 +130,7 @@ function getspiketrains(session::String, group::Integer;checkArtifact::Bool=true
 	cids = map(int,readlines(open(cut_fname,"r")))
 	clusters = unique(cids)
 	clusters = clusters[clusters.>0]
-	sptrains = Dict{String,Array{Float64,1}}()
+	sptrains = Dict{ASCIIString,Array{Float64,1}}()
 	c2 = 1
 	for c in clusters
 		spidx = (cids.==c) | ((cids.==-1)&(D["overlaps"][:,c].==1))
@@ -160,7 +160,7 @@ function getspiketrains(session::String, group::Integer;checkArtifact::Bool=true
 	return sptrains
 end
 
-function parse{T<:Integer}(::Type{Range{T}},a::String)
+@compat function parse{T<:Integer}(::Type{Range{T}},a::AbstractString)
 	m = match(r"([0-9]*)[\-\:]([0-9]*)",a)
      mc = m.captures
     isempty(mc) && return nothing
@@ -168,7 +168,7 @@ function parse{T<:Integer}(::Type{Range{T}},a::String)
     return range(ll[1],ll[2]-ll[1]+1)
 end
 
-function channel_config(fname::String)
+@compat function channel_config(fname::AbstractString)
 	dd = DataFrames.readtable(fname)	
 	#convert to ranges
 	q = map(x->parse(Range{Int64},x),dd[:channels])

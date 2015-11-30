@@ -12,7 +12,7 @@ type SortedFile
 	cinv::Array{Float64,2}
 	ntemplates::Int64
 	nchannels::Int64
-	mlseq::Array{Uint8,2}
+	mlseq::Array{UInt8,2}
 end
 
 type Features
@@ -22,8 +22,8 @@ type Features
 	dv_ratio::Float64
 end
 
-function TemplateFile(fname::String;verbose::Integer=0)
-	if !HDF5.ishdf5(fname)	
+@compat function TemplateFile(fname::AbstractString;verbose::Integer=0)
+	if !HDF5.ishdf5(fname)
 		verbose > 0 && println("$fname is not a valid hdf5 file")
 		return nothing
 	end

@@ -11,7 +11,7 @@ function viterbi{T<:Real}(y::Array{T,1}, p::Number, mu::Array{Float64,2}, C::Num
     ntemps = size(mu,2)
     A = prepA(p,nstates)
     Q = createIndex(ntemps,nstates)
-    chunks = [1:chunk:length(y)]
+    chunks = collect(1:chunk:length(y))
     X = zeros(Int16,length(y),ntemps)
     #make sure we pick up the last chunk as well
     if chunks[end] != length(y)
@@ -64,7 +64,7 @@ function viterbi(y::Array{Int16,1}, A::Array{Float64,2}, mu::Array{Float64,1}, C
     T1 = log(zeros(Float64, nstates, nobs))
     T2 = zeros(Int16, nstates, nobs)
     #define the emitting distributions; assume the same covariance matrix
-    Pn = {Normal(mu[i],sqrt(C))  for i=1:size(mu,1)}
+    Pn = [Normal(mu[i],sqrt(C))  for i=1:size(mu,1)]
     #define initial elements
     #for i=1:nstates
     #    T1[i,1] = log(P[i])+logpdf(Pn[i],y[1])
@@ -109,7 +109,7 @@ function viterbi_2{T<:Real}(y::Array{T,1}, A::Array{Float64,2}, mu::Array{Float6
     T1 = log(zeros(Float64, nstates, nobs))
     T2 = zeros(Int16, nstates, nobs)
     #define the emitting distributions; assume the same covariance matrix
-    Pn = {Normal(mu[i],sqrt(C))  for i=1:size(mu,1)}
+    Pn = [Normal(mu[i],sqrt(C))  for i=1:size(mu,1)]
     T1[1,1] = 0
     for i=2:nobs
         #for state j=1, only two transitions are poossible; 1->1 and nstates->1
@@ -125,11 +125,11 @@ function viterbi_2{T<:Real}(y::Array{T,1}, A::Array{Float64,2}, mu::Array{Float6
             T2[j,i] = 60 
         end
         #remaining transitions are deterministic
-        for j=2:nstates    
+        for j=2:nstates
             q = logpdf(Pn[j],y[i]) #emission probability for symbol i from state j
             tm = T1[j-1,i-1]+A[j-1,j]+q
             T1[j,i] = tm
-            T2[j,i] = j-1 
+            T2[j,i] = j-1
         end
     end
     #define the last state

@@ -24,8 +24,8 @@ function create_signal(N::Integer, sigma::Number, nspikes::Integer, template::Ar
     return S
 end
 
-function is_TemplateFile(fname::String)
-	if !HDF5.ishdf5(fname)	
+@compat function is_TemplateFile(fname::AbstractString)
+	if !HDF5.ishdf5(fname)
 		return false
 	end
 	ff = HDF5.h5open(fname) 
@@ -37,11 +37,11 @@ function is_TemplateFile(fname::String)
 	return true
 end
 
-function is_valid_template_file(fname::String)
+@compat function is_valid_template_file(fname::AbstractString)
 	return get_valid_templates(fname) != nothing
 end
 
-function get_valid_templates(fname::String)
+@compat function get_valid_templates(fname::AbstractString)
 	tf = TemplateFile(fname)
 	if tf == nothing
 		return nothing
