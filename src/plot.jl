@@ -1,7 +1,7 @@
 import Winston
-import Visualizer.visualize
+#import Visualizer.visualize
 import HDF5
-import Color
+import Colors
 
 @compat function visualize{T<:AbstractString}(fnames::Array{T,1})
 	p = Winston.FramedPlot()
@@ -42,7 +42,7 @@ function plot(p::Winston.FramedPlot, tf::TemplateFile)
 	if tf == nothing
 		return p
 	end
-	colors = Color.distinguishable_colors(tf.ntemplates)
+	colors = Colors.distinguishable_colors(tf.ntemplates)
 	t = 1:size(tf.templates,1)
 	for i=1:tf.ntemplates
 		Winston.add(p, Winston.Curve(t,tf.templates[:,:,i][:];color=colors[i]))
