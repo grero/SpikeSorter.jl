@@ -52,7 +52,7 @@ end
         kname = "$(aa)_g$(cidx)c$(cellnr)"
 end
 
-@compat function getspiketrains(;session::AbstractString="",groups::Array{Int64,1}=Array(Int64,0),checkArtifact::Bool=true,verbose::Integer=0)
+@compat function getspiketrains(;session::AbstractString="",groups::Array{Int64,1}=Array(Int64,0),checkArtifact::Bool=true,verbose::Integer=0,check_trials::Bool=true,config::Dict=Dict())
 	if isempty(session)
 		#attempt to get session from the pl2 file
 		for d in (".","..")
@@ -76,13 +76,14 @@ end
 			end
 		end
 	end
-	config = Dict()
-	for ss in (".", "..","../..")
-		if isfile("$(ss)/channel_config.csv")
-			config = channel_config("$(ss)/channel_config.csv")
-			break
-		end
-	end
+    if isempty(config)
+        for ss in (".", "..","../..")
+            if isfile("$(ss)/channel_config.csv")
+                config = channel_config("$(ss)/channel_config.csv")
+                break
+            end
+        end
+    end
 	SS = pmap(f->begin
 					m = match(r"([A-Za-z0-9_]*)g([0-9]*)",f)
 					session = m.captures[1]
@@ -92,25 +93,27 @@ end
 			end,files)
 	sptrains = merge(SS...)
 	#check if we have a trial structure
-	for ss in (".","..")
-		fname = "$(ss)/event_data.mat"
-		if isfile(fname)
-			verbose > 0 && println("Found trial info. Checking for relevant spikes....")
-			trials = Stimulus.loadTrialInfo(fname)
-			rtrials = Stimulus.getTrialType(trials,:reward)
-			target_time = Stimulus.gettime(rtrials,:target)
-			response_time = Stimulus.gettime(rtrials,:response)
-			trial_dur = 1000*maximum(response_time .- target_time) #convert from seconds to ms
-			cells = Spiketrains.sortCells(sptrains)
-			aligned_spikes = Spiketrains.getTrialRaster(sptrains,rtrials,:target,-200.0,trial_dur)
-			#remove cells that never spike during the trial
-			for cc in sort(setdiff(1:length(cells),unique(aligned_spikes.cellidx)))
-				pop!(sptrains,cells[cc])
-				verbose > 0 && println("\tRemoved cell $(cells[cc])")
-			end
-			break
-		end
-	end
+    if check_trials
+        for ss in (".","..")
+            fname = "$(ss)/event_data.mat"
+            if isfile(fname)
+                verbose > 0 && println("Found trial info. Checking for relevant spikes....")
+                trials = Stimulus.loadTrialInfo(fname)
+                rtrials = Stimulus.getTrialType(trials,:reward)
+                target_time = Stimulus.gettime(rtrials,:target)
+                response_time = Stimulus.gettime(rtrials,:response)
+                trial_dur = 1000*maximum(response_time .- target_time) #convert from seconds to ms
+                cells = Spiketrains.sortCells(sptrains)
+                aligned_spikes = Spiketrains.getTrialRaster(sptrains,rtrials,:target,-200.0,trial_dur)
+                #remove cells that never spike during the trial
+                for cc in sort(setdiff(1:length(cells),unique(aligned_spikes.cellidx)))
+                    pop!(sptrains,cells[cc])
+                    verbose > 0 && println("\tRemoved cell $(cells[cc])")
+                end
+                break
+            end
+        end
+    end
 	if !isempty(config)
 		newsptrains = assign_area(sptrains,config)
 	else
