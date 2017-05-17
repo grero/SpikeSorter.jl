@@ -6,8 +6,8 @@ function get_threshold(X::Array{Float64,1},θ=6.0)
   n = length(X)
   μ = mean(X)
   σ = std(X)::Float64 #because of type instability in std
-  l = μ - 6*σ 
-  u = μ + 6*σ 
+  l = μ - θ*σ
+  u = μ + θ*σ
   σ2 = 0.0
   for x in X
     if l < x < u
@@ -18,13 +18,13 @@ function get_threshold(X::Array{Float64,1},θ=6.0)
   μ, σ2
 end
 
-function extract_spikes(X::Array{Float64,1};μ::Float64=NaN, σ::Float64=NaN,nq::Tuple{Int64, Int64}=(20,40))
+function extract_spikes(X::Array{Float64,1};μ::Float64=NaN, σ::Float64=NaN,nq::Tuple{Int64, Int64}=(20,40),θ=6.0)
   if isnan(σ) || isnan(μ)
-    μ, σ = get_threshold(X)
+    μ, σ = get_threshold(X,θ)
   end
   n = length(X)
-  l = μ - 6*σ
-  u = μ + 6*σ
+  l = μ - θ*σ
+  u = μ + θ*σ
   pidx = Array{Int64}(0)
   xmin = Inf
   xmax = -Inf
