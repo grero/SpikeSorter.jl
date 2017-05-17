@@ -1,6 +1,10 @@
 import Grid
 
-@doc meta("Return the width in miliseconds of the spike", returns = (Float64,) ) ->
+"""
+Return the width in miliseconds of the spike
+
+  function spike_width(spike::Array{Float64,1},samplingrate::Real)
+"""
 function spike_width(spike::Array{Float64,1},samplingrate::Real)
 	spikei = Grid.InterpGrid(spike,Grid.BCnil, Grid.InterpQuadratic)
 	dt = length(spike)/samplingrate

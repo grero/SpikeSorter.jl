@@ -1,7 +1,5 @@
 module SpikeSorter
-using Docile
 using Compat
-@docstrings
 include("types.jl")
 include("utility.jl")
 include("hmm.jl")
