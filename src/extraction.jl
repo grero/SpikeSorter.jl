@@ -1,4 +1,8 @@
-function get_threshold(X::Array{Float64,1})
+function highpass_filter(X::Array{Float64,1},sampling_rate::Float64, cutoff::Float64;method=Butterworth(4))
+  filtfilt(digitalfilter(Highpass(cutoff;fs=adfreq), method), X)
+end
+
+function get_threshold(X::Array{Float64,1},θ=6.0)
   n = length(X)
   μ = mean(X)
   σ = std(X)::Float64 #because of type instability in std
