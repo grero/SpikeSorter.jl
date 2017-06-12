@@ -63,11 +63,12 @@ end
 
 function extract_spikes(X::Array{Float64,1}, idx::Array{Int64,1}, n::Tuple{Int64, Int64}=(20,40))
   nt = sum(n)
-  nx = length(idx)
   nb,na = n
+  idxl = find(x->x>nb, idx)
+  nx = length(idxl)
   waveforms = zeros(nt, nx)
   for i in 1:nx
-    _idx = idx[i]
+     _idx = idx[idxl[i]]
     for j in -nb:na-1
       waveforms[j+nb+1,i] = X[_idx + j]
     end
