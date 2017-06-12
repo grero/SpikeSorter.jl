@@ -18,7 +18,7 @@ function get_threshold(X::Array{Float64,1},θ=6.0)
   μ, σ2
 end
 
-function extract_spikes(X::Array{Float64,1};μ::Float64=NaN, σ::Float64=NaN,nq::Tuple{Int64, Int64}=(20,40),θ=6.0)
+function extract_spikes(X::Array{Float64,1};μ::Float64=NaN, σ::Float64=NaN,nq::Tuple{Int64, Int64}=(20,40),θ=6.0,only_negative=true)
   if isnan(σ) || isnan(μ)
     μ, σ = get_threshold(X,θ)
   end
@@ -41,7 +41,7 @@ function extract_spikes(X::Array{Float64,1};μ::Float64=NaN, σ::Float64=NaN,nq:
         _idx = j
       end
       in_peak = true
-    elseif x > u
+  elseif (x > u ) && !only_negative
       if x > xmax
         xmax = x
         _idx = j
