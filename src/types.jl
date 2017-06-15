@@ -1,5 +1,10 @@
 import HDF5
 
+type SpikeWaveforms
+    waveforms::Array{Float64,3}
+    timestamps::Array{Float64,1}
+end
+
 type TemplateFile
 	templates::Array{Float64,3}
 	cinv::Array{Float64,2}
