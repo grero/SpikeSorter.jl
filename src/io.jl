@@ -5,6 +5,7 @@ function Base.write(io::IO, waveforms::SpikeWaveforms)
     headersize = 64
     nbytes = 0
     npoints, nchannels, nspikes = size(waveforms.waveforms) 
+    nbytes += write(io, headersize)
     nbytes += write(io, npoints) 
     nbytes += write(io, nchannels)
     nbytes += write(io, nspikes)
@@ -18,7 +19,7 @@ end
 
 function Base.read(io::IO, ::Type{SpikeWaveforms})
     #read the header
-    headersize = 64
+    headersize = read(io,Int64)
     npoints = read(io, Int64)
     nchannels = read(io, Int64)
     nspikes = read(io, Int64)
