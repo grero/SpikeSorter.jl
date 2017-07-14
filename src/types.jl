@@ -5,6 +5,30 @@ type SpikeWaveforms
     timestamps::Array{Float64,1}
 end
 
+abstract SpikeSorterResult
+abstract FeatureModel
+
+type PCAFeatureModel <: FeatureModel
+    features::Array{Float64,2}
+    model::PCA
+end
+
+transform(m::PCAFeatureModel, y) = transform(m.model, y)
+
+type FeatureSorter{T1 <: FeatureModel, T2} <: SpikeSorterResult
+    waveforms::SpikeWaveforms
+    featuremodel::T1
+    clusterid::Array{Int64,1}
+    clustermodel::T2
+end
+
+function SpikeWaveforms(waveforms::Array{Float64,2}, timestamps::Array{Float64,1})
+    npoints,nspikes = size(waveforms)
+    _waveforms = zeros(npoints, 1, nspikes)
+    _waveforms[:,1,:] = waveforms
+    SpikeWaveforms(_waveforms, timestamps)
+end
+
 type TemplateFile
 	templates::Array{Float64,3}
 	cinv::Array{Float64,2}
