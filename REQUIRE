@@ -1,8 +1,10 @@
-Spiketrains
+#Spiketrains
 Stimulus
 DataFrames
 MAT
 HDF5
 NearestNeighbors
-Grid
+#Grid
+Interpolations
 DSP
+MultivariateStats

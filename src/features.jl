@@ -1,4 +1,4 @@
-import Grid
+#import Grid
 
 """
 Return the width in miliseconds of the spike

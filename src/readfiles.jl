@@ -2,7 +2,7 @@ import MAT
 import Base.parse
 using DataFrames
 import Stimulus
-import Spiketrains
+#import Spiketrains
 
 @compat function loadWaveformsFile(fname::AbstractString;time_conversion::Real=0.001)
 	fid = open(fname,"r")
