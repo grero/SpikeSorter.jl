@@ -57,7 +57,7 @@ function extract_spikes(X::Array{Float64,1};μ::Float64=NaN, σ::Float64=NaN,nq:
     end
     j += 1
   end
-  waveforms = extract_spikes(X, pidx,nq)
+  pidx, waveforms = extract_spikes(X, pidx,nq)
   pidx, waveforms
 end
 
@@ -73,6 +73,6 @@ function extract_spikes(X::Array{Float64,1}, idx::Array{Int64,1}, n::Tuple{Int64
       waveforms[j+nb+1,i] = X[_idx + j]
     end
   end
-  waveforms
+  idx[idxl], waveforms
 end
 
